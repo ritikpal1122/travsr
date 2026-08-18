@@ -201,7 +201,7 @@ impl CatalogResolver {
             if !registered.iter().any(|r| r == lang) {
                 tracing::debug!(
                     lang,
-                    "CatalogResolver: '{}' not in registered list — skipping",
+                    "CatalogResolver: '{}' not in registered list, skipping",
                     lang
                 );
                 continue;
@@ -218,7 +218,7 @@ impl CatalogResolver {
                 tracing::info!(
                     lang,
                     binary = binary_name,
-                    "Phase B catalog: binary not on PATH — skipping (install: {})",
+                    "Phase B catalog: binary not on PATH, skipping (install: {})",
                     catalog_entry.install_hint
                 );
                 continue;
@@ -251,7 +251,7 @@ impl CatalogResolver {
                     tracing::warn!(
                         lang,
                         "Phase B catalog: provider '{}' for '{}' is installed as an npm \
-                         shim ('{}'), which the Windows sandbox cannot execute — install \
+                         shim ('{}'), which the Windows sandbox cannot execute, install \
                          the native binary via `travsr lang install {}`",
                         binary_name,
                         lang,
@@ -288,7 +288,7 @@ impl CatalogResolver {
                         tracing::info!(
                             lang,
                             "Phase B catalog: '{}' is RequiresElevated but no PSE approval \
-                             recorded in lang.toml — skipping (fail-closed, ADR-017 Rule 2). \
+                             recorded in lang.toml, skipping (fail-closed, ADR-017 Rule 2). \
                              Run: travsr lang approve {} --approved-by <pse> --reason \"...\" \
                              --permitted-hosts <hosts>",
                             lang,
@@ -323,7 +323,7 @@ impl CatalogResolver {
                         tracing::warn!(
                             lang,
                             "Phase B catalog: Elevated policy validation failed for '{}': {} \
-                             — skipping (fail-closed, ADR-017 Rule 2)",
+                            , skipping (fail-closed, ADR-017 Rule 2)",
                             lang,
                             e
                         );

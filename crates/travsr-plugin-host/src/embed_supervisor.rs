@@ -61,7 +61,7 @@ impl EmbedSupervisor {
         if !binary.exists() {
             tracing::debug!(
                 binary = %binary.display(),
-                "embed plugin binary not found — Step 4 (semantic ANN) disabled. \
+                "embed plugin binary not found, Step 4 (semantic ANN) disabled. \
                  Run `travsr embed init` to install."
             );
             return Self {
@@ -91,7 +91,7 @@ impl EmbedSupervisor {
                 }
             }
             Err(e) => {
-                tracing::warn!("embed sidecar start failed — Step 4 disabled: {e}");
+                tracing::warn!("embed sidecar start failed, Step 4 disabled: {e}");
                 Self {
                     inner: None,
                     model_id: None,
@@ -288,7 +288,7 @@ impl EmbedSupervisor {
         };
         if let Ok(sidecar) = arc.lock() {
             let _ = sidecar.knn("_prewarm_", 1, model_id, Space::Code);
-            tracing::info!("embed sidecar prewarm complete — KNN ready for queries");
+            tracing::info!("embed sidecar prewarm complete, KNN ready for queries");
         }
     }
 
@@ -310,7 +310,7 @@ impl EmbedSupervisor {
         if self.respawn_count >= MAX_RESPAWN_ATTEMPTS {
             tracing::warn!(
                 attempts = MAX_RESPAWN_ATTEMPTS,
-                "embed sidecar exceeded max respawn attempts — Step 4 permanently disabled"
+                "embed sidecar exceeded max respawn attempts, Step 4 permanently disabled"
             );
             return false;
         }

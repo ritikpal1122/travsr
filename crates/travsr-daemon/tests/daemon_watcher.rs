@@ -79,7 +79,7 @@ async fn watcher_ignores_non_source_files() {
                         p.display()
                     );
                 }
-                _ => {} // other events (dir creation etc.) — keep draining
+                _ => {} // other events (dir creation etc.), keep draining
             }
         }
     })

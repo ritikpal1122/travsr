@@ -37,7 +37,7 @@ pub fn is_comment_line(s: &str) -> bool {
         || t.starts_with('*')
         || t.starts_with("/*")
         || t.starts_with("*/")
-        || (t.starts_with('#') && !t.starts_with("#[") && !t.starts_with("#![")) // Python/Ruby/shell — not Rust attributes
+        || (t.starts_with('#') && !t.starts_with("#[") && !t.starts_with("#![")) // Python/Ruby/shell, not Rust attributes
         || t.starts_with("\"\"\"")
         || t.starts_with("'''")
         || t.starts_with("--")   // SQL / Haskell / Lua
@@ -112,7 +112,7 @@ pub fn snippet_for_node_capped(node: &Node, repo_root: &Path, cap: usize) -> Opt
             path = %node.vname.path,
             from,
             to,
-            "snippet_for_node: end_line < line in DB — skipping node"
+            "snippet_for_node: end_line < line in DB, skipping node"
         );
         return None;
     }
@@ -168,7 +168,7 @@ pub fn resolve_source_path(node: &Node, repo_root: &Path) -> Option<std::path::P
     if !canon_abs.starts_with(&canon_root) {
         tracing::warn!(
             path = %node.vname.path,
-            "resolve_source_path: path escapes repo_root — skipping"
+            "resolve_source_path: path escapes repo_root, skipping"
         );
         return None;
     }

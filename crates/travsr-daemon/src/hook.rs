@@ -2,9 +2,32 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Context as _;
 
-const TRAVSR_MARKER_SH: &str = "# installed by travsr \u{2014} do not edit this line";
+const TRAVSR_MARKER_SH: &str = "# installed by travsr, do not edit this line";
 #[cfg(windows)]
-const TRAVSR_MARKER_CMD: &str = "@rem installed by travsr \u{2014} do not edit this line";
+const TRAVSR_MARKER_CMD: &str = "@rem installed by travsr, do not edit this line";
+
+/// The marker Travsr wrote before the em-dash was removed from its output.
+///
+/// Detection has to keep recognising it: a hook installed by any earlier
+/// version still carries this spelling on disk, and a hook Travsr no longer
+/// recognises as its own is treated as the user's, so it gets backed up and
+/// chained instead of replaced. Every existing install would take that path
+/// exactly once, on upgrade, which is the worst possible moment for it.
+///
+/// Write the current marker, accept either.
+const TRAVSR_MARKER_SH_LEGACY: &str = "# installed by travsr \u{2014} do not edit this line";
+#[cfg(windows)]
+const TRAVSR_MARKER_CMD_LEGACY: &str = "@rem installed by travsr \u{2014} do not edit this line";
+
+/// Whether `existing` is a hook Travsr installed, in either spelling.
+fn is_travsr_hook_sh(existing: &str) -> bool {
+    existing.contains(TRAVSR_MARKER_SH) || existing.contains(TRAVSR_MARKER_SH_LEGACY)
+}
+
+#[cfg(windows)]
+fn is_travsr_hook_cmd(existing: &str) -> bool {
+    existing.contains(TRAVSR_MARKER_CMD) || existing.contains(TRAVSR_MARKER_CMD_LEGACY)
+}
 
 /// Hooks Travsr installs, and the git event each one covers.
 ///
@@ -66,7 +89,7 @@ fn branch_checkout_guard_sh(hook: &str) -> &'static str {
 fn hook_body(hook: &str, bin: &str) -> String {
     format!(
         r#"#!/bin/sh
-# installed by travsr — do not edit this line
+# installed by travsr, do not edit this line
 {guard}_travsr={exe}
 [ -x "$_travsr" ] || _travsr="travsr"
 exec "$_travsr" hook-run --from-hook --event {hook}
@@ -79,7 +102,7 @@ exec "$_travsr" hook-run --from-hook --event {hook}
 fn chain_hook_body(hook: &str, bin: &str) -> String {
     format!(
         r#"#!/bin/sh
-# installed by travsr — do not edit this line
+# installed by travsr, do not edit this line
 # chains the pre-existing hook that was renamed to {hook}.travsr-pre.bak
 _dir="$(cd "$(dirname "$0")" && pwd)"
 if [ -x "$_dir/{hook}.travsr-pre.bak" ]; then
@@ -198,13 +221,13 @@ fn install_one(hooks_dir: &Path, hook: &str, bin: &str) -> anyhow::Result<()> {
     let script = if hook_path.exists() {
         let existing = std::fs::read_to_string(&hook_path)
             .with_context(|| format!("reading existing {hook} hook"))?;
-        if existing.contains(TRAVSR_MARKER_SH) {
+        if is_travsr_hook_sh(&existing) {
             hook_body(hook, bin)
         } else if bak_path.exists() {
             // L6: a backup already exists — the user may have manually restored their
             // original hook over ours. Don't silently overwrite the backup.
             tracing::info!(
-                "{hook} hook modified since last install and {} already exists — \
+                "{hook} hook modified since last install and {} already exists, \
                  overwriting hook only (not re-backing up)",
                 bak_path.display()
             );
@@ -232,7 +255,7 @@ fn install_one(hooks_dir: &Path, hook: &str, bin: &str) -> anyhow::Result<()> {
         let cmd_script = if cmd_hook_path.exists() {
             let existing = std::fs::read_to_string(&cmd_hook_path)
                 .with_context(|| format!("reading existing {hook}.cmd hook"))?;
-            if existing.contains(TRAVSR_MARKER_CMD) {
+            if is_travsr_hook_cmd(&existing) {
                 cmd_hook_body(hook, bin)
             } else if cmd_bak_path.exists() {
                 // L6 (#507): same guard as the POSIX branch above. The user may
@@ -240,7 +263,7 @@ fn install_one(hooks_dir: &Path, hook: &str, bin: &str) -> anyhow::Result<()> {
                 // REPLACES the destination, so re-backing up here would destroy
                 // the original backup.
                 tracing::info!(
-                    "{hook}.cmd hook modified since last install and {} already exists — \
+                    "{hook}.cmd hook modified since last install and {} already exists, \
                      overwriting hook only (not re-backing up)",
                     cmd_bak_path.display()
                 );
@@ -448,6 +471,24 @@ mod tests {
     /// `Not a directory (os error 20)`, leaving `init` half done. Git hooks are
     /// a common resource, so the hook must land in the shared common hooks dir
     /// (`<main>/.git/hooks`) and installing from the worktree must succeed.
+    /// A hook written before the em-dash was removed must still be recognised
+    /// as Travsr's own. If it is not, upgrading treats it as the user's hook
+    /// and chains it instead of replacing it, once, for every existing install.
+    #[test]
+    fn a_legacy_marker_is_still_recognised_as_our_own_hook() {
+        let legacy = format!("#!/bin/sh\n{TRAVSR_MARKER_SH_LEGACY}\nexec travsr hook-run\n");
+        assert!(
+            is_travsr_hook_sh(&legacy),
+            "a hook from before the marker changed is still ours"
+        );
+        let current = format!("#!/bin/sh\n{TRAVSR_MARKER_SH}\nexec travsr hook-run\n");
+        assert!(is_travsr_hook_sh(&current));
+        assert!(
+            !is_travsr_hook_sh("#!/bin/sh\necho someone elses hook\n"),
+            "an unrelated hook must not be claimed"
+        );
+    }
+
     #[test]
     fn install_hook_from_worktree_uses_common_hooks_dir() {
         if !git_available() {

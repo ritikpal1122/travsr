@@ -78,7 +78,7 @@ pub fn parse(
     };
     let Ok(text) = String::from_utf8(bytes) else {
         tracing::debug!(
-            "markdown: non-UTF-8 content at {:?} — file node only, no chunks",
+            "markdown: non-UTF-8 content at {:?}, file node only, no chunks",
             abs_path
         );
         return Ok(out);
@@ -608,7 +608,7 @@ fn build_sections(doc: &ScanResult, lines: &[&str]) -> Vec<Section> {
 /// without this).
 fn split_section(lines: &[&str], start_1based: usize, end_1based: usize) -> Vec<(usize, usize)> {
     if start_1based > end_1based {
-        return vec![(start_1based, end_1based)]; // empty body — nothing to split
+        return vec![(start_1based, end_1based)]; // empty body, nothing to split
     }
     let total_chars = raw_char_len(lines, start_1based, end_1based);
     if total_chars <= SPLIT_CHARS {

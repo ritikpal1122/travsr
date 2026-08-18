@@ -428,7 +428,7 @@ fn sandbox_repo_root_is_read_only() {
             let _ = spawner.output();
             assert!(
                 !breach_path.exists(),
-                "sandbox allowed write to repo root — FS confinement broken"
+                "sandbox allowed write to repo root, FS confinement broken"
             );
         }
     }
@@ -461,7 +461,7 @@ fn sandbox_scratch_dir_is_writable() {
             let status = spawner.status().expect("spawn");
             assert!(
                 status.success(),
-                "sandbox blocked write to /travsr-scratch — should be writable"
+                "sandbox blocked write to /travsr-scratch, should be writable"
             );
         }
     }
@@ -528,7 +528,7 @@ fn standard_languages_do_not_require_approval() {
 fn elevated_policy_rejects_empty_reason() {
     let policy = SandboxPolicy::Elevated {
         permitted_hosts: vec!["example.com".to_string()],
-        reason: String::new(), // empty — should fail
+        reason: String::new(), // empty, should fail
         approved_by: "pse-handle".to_string(),
         approved_date: "2026-05-31".to_string(),
     };
@@ -572,7 +572,7 @@ fn elevated_policy_rejects_empty_approved_date() {
         permitted_hosts: vec!["repo1.maven.org".to_string()],
         reason: "Maven dependency resolution".to_string(),
         approved_by: "pse-handle".to_string(),
-        approved_date: String::new(), // empty — re-review date is mandatory
+        approved_date: String::new(), // empty, re-review date is mandatory
     };
     assert!(
         policy.validate().is_err(),
@@ -583,7 +583,7 @@ fn elevated_policy_rejects_empty_approved_date() {
 #[test]
 fn elevated_policy_rejects_empty_permitted_hosts() {
     let policy = SandboxPolicy::Elevated {
-        permitted_hosts: vec![], // no allowlist — cannot mean "all hosts"
+        permitted_hosts: vec![], // no allowlist, cannot mean "all hosts"
         reason: "Maven dependency resolution".to_string(),
         approved_by: "pse-handle".to_string(),
         approved_date: "2026-05-31".to_string(),

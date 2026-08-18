@@ -94,7 +94,7 @@ fn opens_call(after: &str) -> bool {
         }
         match end {
             Some(e) => s = rest[e..].trim_start(),
-            None => return false, // unbalanced — treat as non-call
+            None => return false, // unbalanced, treat as non-call
         }
     }
 

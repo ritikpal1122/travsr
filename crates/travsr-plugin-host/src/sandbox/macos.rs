@@ -127,7 +127,7 @@ pub fn build_sandboxed_command(
             tracing::warn!(
                 permitted_hosts = ?permitted_hosts,
                 "ADR-017 Elevated policy on macOS: sandbox-exec cannot enforce per-host \
-                 network filtering; '(allow network*)' is in effect — enforce permitted \
+                 network filtering; '(allow network*)' is in effect, enforce permitted \
                  hosts via a local firewall or egress proxy"
             );
             "(allow network*)".to_string()

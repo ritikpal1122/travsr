@@ -67,7 +67,7 @@ pub fn run() -> anyhow::Result<()> {
     let db_path = repo_root.join(".travsr").join("graph.db");
 
     if !db_path.exists() {
-        anyhow::bail!("not initialized — run `travsr init`");
+        anyhow::bail!("not initialized. Run `travsr init`");
     }
 
     let payload: StatusPayload =
@@ -118,7 +118,7 @@ pub fn run() -> anyhow::Result<()> {
     let sig_v = payload.signature_format_version;
     if sig_v != travsr_core::SIGNATURE_FORMAT_VERSION {
         eprintln!(
-            "warning: signature format v{sig_v} != current v{} — graph built with an older format; run `travsr init` to re-index",
+            "warning: signature format v{sig_v} != current v{}, graph built with an older format; run `travsr init` to re-index",
             travsr_core::SIGNATURE_FORMAT_VERSION
         );
     }
@@ -127,7 +127,7 @@ pub fn run() -> anyhow::Result<()> {
     let fts = payload.fts_nodes;
     if fts > 0 && fts != payload.nodes {
         eprintln!(
-            "warning: text search index has {fts} rows but the graph has {} nodes — run `travsr init` to rebuild",
+            "warning: text search index has {fts} rows but the graph has {} nodes. Run `travsr init` to rebuild",
             payload.nodes
         );
     }
@@ -153,18 +153,18 @@ pub fn run() -> anyhow::Result<()> {
                 let parts: Vec<&str> = warn.splitn(2, ':').collect();
                 match parts.as_slice() {
                     ["crashed", lang] => eprintln!(
-                        "warning: semantic analyzer for '{lang}' crashed — re-run `travsr init --semantic` to retry"
+                        "warning: semantic analyzer for '{lang}' crashed. Re-run `travsr init --semantic` to retry"
                     ),
                     ["version_mismatch", rest] => {
                         let v: Vec<&str> = rest.splitn(3, ':').collect();
                         if let [lang, expected, got] = v.as_slice() {
                             eprintln!(
-                                "warning: '{lang}' sidecar protocol v{got} != expected v{expected} — run `travsr lang install {lang}`"
+                                "warning: '{lang}' sidecar protocol v{got} != expected v{expected}. Run `travsr lang install {lang}`"
                             );
                         }
                     }
                     ["needs_approval", lang] => eprintln!(
-                        "warning: '{lang}' requires elevated sandbox approval — run `travsr lang approve {lang}`"
+                        "warning: '{lang}' requires elevated sandbox approval. Run `travsr lang approve {lang}`"
                     ),
                     // #449: languages present in the repo whose Phase B sidecar
                     // never ran, previously a silent skip that left the user
@@ -190,7 +190,7 @@ pub fn run() -> anyhow::Result<()> {
                     // tree-sitter node — their references attribute to an orphaned
                     // duplicate node instead. `rate` is missed/attempted.
                     ["scip_unification_misses", rate] => eprintln!(
-                        "warning: {rate} semantic definitions did not match their parsed symbol — some references may resolve to a duplicate. Re-run `travsr init --semantic` if it persists."
+                        "warning: {rate} semantic definitions did not match their parsed symbol, some references may resolve to a duplicate. Re-run `travsr init --semantic` if it persists."
                     ),
                     _ => {}
                 }
@@ -202,7 +202,7 @@ pub fn run() -> anyhow::Result<()> {
     if let Some(reason) = &payload.rust_lsif_degraded {
         if reason == "sandbox_unavailable" {
             eprintln!(
-                "warning: Rust semantic edges degraded — rust-analyzer LSIF was \
+                "warning: Rust semantic edges degraded, rust-analyzer LSIF was \
                  skipped because the OS sandbox (bubblewrap/sandbox-exec) is \
                  unavailable. Install bubblewrap, or re-run \
                  `travsr init --allow-unsandboxed-lsif` if you trust this repo."
@@ -215,7 +215,7 @@ pub fn run() -> anyhow::Result<()> {
     if let Some(pkgs) = payload.dart_deps_unresolved.as_deref() {
         if !pkgs.is_empty() {
             eprintln!(
-                "warning: Dart cross-package references are incomplete — these \
+                "warning: Dart cross-package references are incomplete, these \
                  package(s) were indexed without resolved dependencies: {pkgs}. \
                  Run `dart pub get` in each to enable cross-package references \
                  (intra-package references are unaffected)."

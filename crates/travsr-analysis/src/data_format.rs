@@ -507,7 +507,7 @@ fn parse_pom_xml(path: &Path, file_id: NodeId, out: &mut ParseOutput) {
     reader.config_mut().trim_text(true);
 
     // Collect the three sub-elements of each <dependency> block.
-    let mut in_dependencies = 0u32; // depth counter — handles nested <dependencies>
+    let mut in_dependencies = 0u32; // depth counter, handles nested <dependencies>
     let mut in_dependency = false;
     let mut group_id = String::new();
     let mut artifact_id = String::new();

@@ -58,7 +58,7 @@ impl Drop for GlobalConfigGuard {
 }
 
 const MODEL_A: &str = "bge-small-en-v1.5"; // 384-dim, cheapest installed backend
-const MODEL_B: &str = "bge-base-en-v1.5"; // next-cheapest — the point is the
+const MODEL_B: &str = "bge-base-en-v1.5"; // next-cheapest, the point is the
                                           // lifecycle transition, not accuracy
 
 fn git_init(dir: &Path) {

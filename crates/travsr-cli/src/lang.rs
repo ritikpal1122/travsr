@@ -167,7 +167,7 @@ fn unavailable_status(entry: &PhaseBEntry, target: &str) -> String {
     let hint = if entry.underlying_tool_hint.is_empty() {
         String::new()
     } else {
-        format!(" — manual setup: {}", entry.underlying_tool_hint)
+        format!(", manual setup: {}", entry.underlying_tool_hint)
     };
     format!(
         "not available on {target} yet ({} ships no prebuilt binary for this platform){hint}",
@@ -276,7 +276,7 @@ fn cmd_list(json: bool) -> Result<()> {
                 let age = (today - date).num_days();
                 if age > APPROVAL_EXPIRY_DAYS {
                     Some(format!(
-                        " ⚠ approval expired ({age} days ago — re-run travsr lang approve)"
+                        " ⚠ approval expired ({age} days ago. Re-run travsr lang approve)"
                     ))
                 } else {
                     None
@@ -302,7 +302,7 @@ fn cmd_list(json: bool) -> Result<()> {
         let status = if let Some(target) = wrapper_unavailable_target(entry) {
             unavailable_status(entry, target)
         } else if entry.sandbox == SandboxRequirement::RequiresElevated && !approved {
-            "needs security approval (travsr lang install — run interactively)".to_string()
+            "needs security approval (travsr lang install. Run interactively)".to_string()
         } else if wrapper_only {
             let hint = if entry.underlying_tool_hint.is_empty() {
                 entry.install_hint
@@ -310,7 +310,7 @@ fn cmd_list(json: bool) -> Result<()> {
                 entry.underlying_tool_hint
             };
             format!(
-                "wrapper-only  ({} installed, {} missing — {})",
+                "wrapper-only  ({} installed, {} missing, {})",
                 entry.provider_binary.unwrap(),
                 entry.command,
                 hint,
@@ -322,7 +322,7 @@ fn cmd_list(json: bool) -> Result<()> {
             let hint = "sandbox-exec unavailable";
             #[cfg(not(any(target_os = "linux", target_os = "macos")))]
             let hint = "sandbox not available on this platform";
-            format!("disabled (sandbox unavailable — {hint})")
+            format!("disabled (sandbox unavailable, {hint})")
         } else if active_eligible && fully_ready {
             let phase_b_note = if entry.builtin
                 && !entry.native_phase_b
@@ -349,16 +349,16 @@ fn cmd_list(json: bool) -> Result<()> {
                 entry.command
             };
             format!(
-                "registered but {missing} not on PATH — run: travsr lang install {}",
+                "registered but {missing} not on PATH, run: travsr lang install {}",
                 entry.language
             )
         } else if fully_ready {
             format!(
-                "on PATH, not registered — run: travsr lang install {}",
+                "on PATH, not registered, run: travsr lang install {}",
                 entry.language
             )
         } else {
-            format!("not installed — {}", entry.install_hint)
+            format!("not installed, {}", entry.install_hint)
         };
 
         println!(
@@ -403,7 +403,7 @@ fn cmd_install(
             "'{language}' is {}\n\
              \n\
              Structural indexing (symbols, definitions, repo map) still works on \
-             this platform — only call/reference analysis needs this binary.",
+             this platform, only call/reference analysis needs this binary.",
             unavailable_status(entry, target)
         );
     }
@@ -444,7 +444,7 @@ fn cmd_install(
 
     // Download and install the travsr-lang-* wrapper binary.
     let wrapper_installed = match entry.provider_binary {
-        None => true, // builtin — no external wrapper needed
+        None => true, // builtin, no external wrapper needed
         Some(bin) if which(bin) && !reinstall => {
             println!("\u{2713} {bin} already installed.");
             // RFC-025 Point B: presence never re-checks the release the wrapper
@@ -902,7 +902,7 @@ fn cmd_detect() -> Result<()> {
         };
 
         println!(
-            "  [{}] {}  ({})  — {}",
+            "  [{}] {}  ({}) , {}",
             i + 1,
             lang,
             entry.extensions.join(", "),
@@ -912,7 +912,7 @@ fn cmd_detect() -> Result<()> {
     println!();
 
     if !std::io::stdin().is_terminal() {
-        println!("(non-interactive — run `travsr lang install <lang>` to install individually)");
+        println!("(non-interactive. Run `travsr lang install <lang>` to install individually)");
         return Ok(());
     }
 
@@ -1116,7 +1116,7 @@ fn cmd_approve(
 
     if entry.sandbox != SandboxRequirement::RequiresElevated {
         anyhow::bail!(
-            "'{language}' uses Standard sandbox — no approval needed. \
+            "'{language}' uses Standard sandbox, no approval needed. \
              Run `travsr lang install {language}` directly."
         );
     }
@@ -1141,7 +1141,7 @@ fn cmd_approve(
     println!(
         "\u{2713} Security approval recorded for '{language}'.\n\
          Permitted hosts: {}\n\
-         note: the sandbox does not filter traffic per host — this allowlist is\n\
+         note: the sandbox does not filter traffic per host, this allowlist is\n\
          only enforced if a host-level firewall or egress proxy backs it.\n\
          Run `travsr lang install {language}` to complete installation.",
         permitted_hosts.join(", ")
@@ -1202,7 +1202,7 @@ fn inline_approval_prompt(
 
     println!(
         "\u{2713} Approval recorded. Permitted hosts: {}\n\
-         note: the sandbox does not filter traffic per host — this allowlist is\n\
+         note: the sandbox does not filter traffic per host, this allowlist is\n\
          only enforced if a host-level firewall or egress proxy backs it.\n",
         permitted_hosts.join(", ")
     );

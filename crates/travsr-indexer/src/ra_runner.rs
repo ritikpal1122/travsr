@@ -105,7 +105,7 @@ pub fn run_ra_lsif(repo_root: &Path, cfg: &SandboxConfig) -> anyhow::Result<Opti
     let ra_path = match ra_binary_path() {
         Some(p) => p,
         None => {
-            tracing::info!("rust-analyzer not found — skipping Rust LSIF ingestion");
+            tracing::info!("rust-analyzer not found, skipping Rust LSIF ingestion");
             return Ok(None);
         }
     };
@@ -145,7 +145,7 @@ fn spawn_or_skip_ra(
                 tracing::warn!(
                     repo = %repo_root.display(),
                     reason,
-                    "rust-analyzer LSIF SKIPPED — sandbox unavailable and \
+                    "rust-analyzer LSIF SKIPPED, sandbox unavailable and \
                      --allow-unsandboxed-lsif not set; Rust semantic edges degraded \
                      to tree-sitter/native structural edges. Install bubblewrap, or \
                      pass --allow-unsandboxed-lsif if you trust this repository."
@@ -161,7 +161,7 @@ fn spawn_or_skip_ra(
             tracing::warn!(
                 repo = %repo_root.display(),
                 reason,
-                "rust-analyzer will run UNCONFINED — TRAVSR_ALLOW_UNSANDBOXED_LSIF \
+                "rust-analyzer will run UNCONFINED, TRAVSR_ALLOW_UNSANDBOXED_LSIF \
                  opt-in acknowledged. Ensure this repository is fully trusted."
             );
         }
@@ -277,7 +277,7 @@ mod tests {
         );
         assert!(
             !sentinel.exists(),
-            "sentinel file must not exist — spawn_or_skip_ra called cmd.spawn() \
+            "sentinel file must not exist, spawn_or_skip_ra called cmd.spawn() \
              despite Unavailable sandbox and allow_unsandboxed=false (SEV-2 regression)"
         );
     }

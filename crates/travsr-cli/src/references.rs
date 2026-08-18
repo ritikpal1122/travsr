@@ -44,7 +44,7 @@ fn envelope_body(output: &str) -> &str {
 
 pub fn run(symbol: &str, path: Option<String>, format: OutputFormat) -> anyhow::Result<()> {
     if symbol.trim().is_empty() {
-        anyhow::bail!("symbol must not be empty — try: travsr refs PaymentService");
+        anyhow::bail!("symbol must not be empty, try: travsr refs PaymentService");
     }
     let cwd = std::env::current_dir().context("getting current directory")?;
     // #661 WS-D: read HEAD at cwd before the worktree redirect so a drifted
@@ -53,7 +53,7 @@ pub fn run(symbol: &str, path: Option<String>, format: OutputFormat) -> anyhow::
     let repo_root = find_git_root(&cwd)?;
     let db_path = repo_root.join(".travsr/graph.db");
     if !db_path.exists() {
-        anyhow::bail!("not initialized — run `travsr init`");
+        anyhow::bail!("not initialized. Run `travsr init`");
     }
 
     daemon_client::warn_if_call_graph_degraded(&db_path);

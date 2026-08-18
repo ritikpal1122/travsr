@@ -85,7 +85,7 @@ mod windows_sandbox {
         // AppContainer SID. If exit 0: the container escaped FS isolation.
         assert!(
             !output.status.success() || !target.exists(),
-            "AppContainer allowed write outside scratch — FS confinement broken"
+            "AppContainer allowed write outside scratch, FS confinement broken"
         );
         let _ = std::fs::remove_file(&target); // cleanup if write somehow succeeded
     }
@@ -245,7 +245,7 @@ mod windows_sandbox {
             Ok(travsr_plugin_host::sandbox::SandboxedSpawn::Wrapped(_)) => {
                 panic!(
                     "ADR-017 Rule 2 VIOLATED: build_sandboxed_command returned an \
-                     unsandboxed Wrapped command on Windows — plugin would run \
+                     unsandboxed Wrapped command on Windows, plugin would run \
                      without AppContainer isolation"
                 );
             }

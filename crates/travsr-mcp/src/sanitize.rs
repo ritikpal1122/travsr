@@ -940,7 +940,7 @@ mod tests {
         assert!(validate_mcp_arg("fn:charge").is_ok());
         assert!(validate_mcp_arg("my-repo").is_ok());
         assert!(validate_mcp_arg("github.com/acme/foo").is_ok());
-        assert!(validate_mcp_arg("").is_ok()); // empty is valid — "nothing found"
+        assert!(validate_mcp_arg("").is_ok()); // empty is valid, "nothing found"
     }
 
     // ── #636: redact_sensitive / sanitize_log_value ──────────────────────────

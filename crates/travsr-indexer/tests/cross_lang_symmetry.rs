@@ -155,7 +155,7 @@ fn arb_napi_marker_pair() -> impl Strategy<Value = (FfiMarker, FfiMarker)> {
                 None::<String>,
                 arity, // same arity → name+arity match → confidence 90
                 None::<String>,
-                "test-corpus", // same corpus — corpus invariant satisfied
+                "test-corpus", // same corpus, corpus invariant satisfied
             )
             .expect("arb marker must be valid");
             (export, call)

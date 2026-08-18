@@ -1797,7 +1797,7 @@ fn semantic_validate(
     }
     let top = oracle.values().copied().fold(0.0_f32, f32::max);
     if top < cal.map(SEMANTIC_ORACLE_MIN) {
-        return seeds; // oracle not confident — trust lexical evidence
+        return seeds; // oracle not confident, trust lexical evidence
     }
     // The relative floor is anchored on the ORACLE top, which may be a non-seed
     // over-fetch neighbour (or a noise node) far above the best actual seed. When
@@ -2343,7 +2343,7 @@ pub(crate) fn build_seed_set(
         // `max_bm25` being the true batch max above — hence the explicit fold-max.
         let in_scope = match package_root(&node.vname.path) {
             Some(root) => anchor_roots.contains(root),
-            None => true, // no parseable root — allowed through as before
+            None => true, // no parseable root, allowed through as before
         };
         if scope_gate_drops(
             !anchor_roots.is_empty(),
@@ -3116,7 +3116,7 @@ pub(crate) fn abstain_message(seed_set: &SeedSet, query: &str) -> String {
     if max_guesses > 0 && !seed_set.seeds.is_empty() {
         msg.push_str(&format!(
             "\n[The core of your query isn't in this repo. \
-             Showing closest {} guess(es) only — treat these as speculative.]\n",
+             Showing closest {} guess(es) only, treat these as speculative.]\n",
             seed_set.seeds.len().min(max_guesses)
         ));
     }
@@ -3932,7 +3932,7 @@ mod tests {
             token: "ppr".into(),
             resolved: false,
             symbol_freq: 50,
-            idf_w: 0.0, // not resolved — idf_w irrelevant
+            idf_w: 0.0, // not resolved, idf_w irrelevant
             top_node: None,
             anchors_emitted: 0,
         }];
@@ -4178,13 +4178,13 @@ mod tests {
                 token: "load".into(),
                 resolved: true,
                 symbol_freq: 1361,
-                idf_w: 0.42, // generic — does not count toward coverage/specific anchor
+                idf_w: 0.42, // generic, does not count toward coverage/specific anchor
                 top_node: Some(NodeId(1)),
                 anchors_emitted: 0,
             },
             ResolvedTerm {
                 token: "mutationg".into(),
-                resolved: false, // typo — unresolved
+                resolved: false, // typo, unresolved
                 symbol_freq: 0,
                 idf_w: 1.0,
                 top_node: None,
@@ -4531,7 +4531,7 @@ mod tests {
     fn confidence_lexical_strong_survives_weak_oracle() {
         let terms = vec![ResolvedTerm {
             token: "ppr".into(),
-            resolved: false, // no anchor — pure whole-query BM25 evidence
+            resolved: false, // no anchor, pure whole-query BM25 evidence
             symbol_freq: 50,
             idf_w: 0.0,
             top_node: None,
@@ -5029,7 +5029,7 @@ mod tests {
             &scored,
             &Calibration::IDENTITY,
             g1_bypass,
-            Some(0.02), // reranker scored the exact match low — must be ignored
+            Some(0.02), // reranker scored the exact match low, must be ignored
         );
         assert_eq!(
             c,
@@ -5056,7 +5056,7 @@ mod tests {
         let terms = [ResolvedTerm {
             token: "drop".into(),
             resolved: true,
-            symbol_freq: 50, // common — dozens of Drop impls, nowhere near rare
+            symbol_freq: 50, // common, dozens of Drop impls, nowhere near rare
             idf_w: 0.6,
             top_node: Some(NodeId(1)),
             anchors_emitted: 0,
@@ -5066,7 +5066,7 @@ mod tests {
         assert!(!g1_bypass, "a common exact anchor must not bypass");
         let c = classify_confidence(
             &terms,
-            0.6, // coverage alone clears coverage_strong — must not be enough on its own
+            0.6, // coverage alone clears coverage_strong, must not be enough on its own
             0.0,
             true,
             false,
@@ -5095,7 +5095,7 @@ mod tests {
             ResolvedTerm {
                 token: "drop".into(),
                 resolved: true,
-                symbol_freq: 50, // common — this is the term that produced the exact anchor
+                symbol_freq: 50, // common, this is the term that produced the exact anchor
                 idf_w: 0.6,
                 top_node: Some(NodeId(1)),
                 anchors_emitted: 0,
@@ -5103,7 +5103,7 @@ mod tests {
             ResolvedTerm {
                 token: "incidental".into(),
                 resolved: true,
-                symbol_freq: 1, // rare, but resolves to an unrelated node — not an exact anchor
+                symbol_freq: 1, // rare, but resolves to an unrelated node, not an exact anchor
                 idf_w: 0.9,
                 top_node: Some(NodeId(2)),
                 anchors_emitted: 0,
@@ -5517,7 +5517,7 @@ mod tests {
             if !t.is_anchor_emit {
                 assert_eq!(
                     t.anchors_emitted, 0,
-                    "token {:?} was suppressed before the anchor loop, so it emitted nothing — \
+                    "token {:?} was suppressed before the anchor loop, so it emitted nothing, \
                      reporting a non-zero count would attribute a relevance drop to capacity",
                     t.token
                 );
@@ -5568,12 +5568,12 @@ mod tests {
         let legs = report.legs.expect("legs must be Some when node_found");
         assert!(
             legs.trigram.is_some(),
-            "fn:walk must show a trigram (substring) match on 'wal' — that's \
+            "fn:walk must show a trigram (substring) match on 'wal', that's \
              the actual mechanism, and explain exists to surface it"
         );
         assert!(
             legs.word.is_none(),
-            "fn:walk must NOT show a word-leg match — 'wal' is not a word \
+            "fn:walk must NOT show a word-leg match, 'wal' is not a word \
              segment of 'walk', only a substring of it"
         );
         assert!(
@@ -5720,7 +5720,7 @@ mod tests {
         assert!(
             matches!(seed_set.confidence, Confidence::Strong | Confidence::Exact),
             "an exact camelCase symbol-name query must not collapse to a weak \
-             confidence, let alone abstain — got {:?}, seeds: {:?}",
+             confidence, let alone abstain, got {:?}, seeds: {:?}",
             seed_set.confidence,
             seed_set
                 .seeds
@@ -6094,7 +6094,7 @@ mod tests {
             vec![
                 (NodeId(1), 0.55),
                 (NodeId(2), 0.90),
-                (NodeId(3), 0.10), // would be below the old DOC_FLOOR — kept here
+                (NodeId(3), 0.10), // would be below the old DOC_FLOOR, kept here
                 (NodeId(4), 0.70),
             ]
         };
@@ -6142,7 +6142,7 @@ mod tests {
         assert!(
             resolved < travsr_rerank::DEFAULT_WEAK_FLOOR,
             "the docs lane floor is deliberately below the code lane's WEAK floor \
-             ({resolved} vs {}) — §14.1 measured the doc negative-arm ceiling at \
+             ({resolved} vs {}), §14.1 measured the doc negative-arm ceiling at \
              ~0.002, not ~0.5; borrowing the code floor cost travsr a gold hit",
             travsr_rerank::DEFAULT_WEAK_FLOOR
         );

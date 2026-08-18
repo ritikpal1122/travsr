@@ -124,9 +124,9 @@ async fn rss_flood_under_200mb() {
     // spawn_blocking tasks × 8 MB each) peaks at ~800 MB.
     // Release: peak ~60 MB (fixed) vs ~800 MB (broken) — tighter budget.
     let rss_budget_kb: u64 = if cfg!(debug_assertions) {
-        512 * 1024 // 512 MB — above fixed code (~305 MB), well below broken (~800 MB)
+        512 * 1024 // 512 MB, above fixed code (~305 MB), well below broken (~800 MB)
     } else {
-        200 * 1024 // 200 MB — comfortable headroom in optimised builds
+        200 * 1024 // 200 MB, comfortable headroom in optimised builds
     };
 
     let tmp = tempfile::tempdir().expect("tempdir");
@@ -197,7 +197,7 @@ async fn rss_flood_under_200mb() {
 
     assert!(
         rss_delta_kb < rss_budget_kb,
-        "RSS grew by {rss_delta_kb} kB after a {FILE_COUNT}-file event flood — \
+        "RSS grew by {rss_delta_kb} kB after a {FILE_COUNT}-file event flood, \
          expected < {rss_budget_kb} kB. \
          This indicates spawn_blocking task accumulation or a debounce-table leak. \
          Hint: ensure the single indexer worker (PERF-001) is in place and no \
@@ -303,7 +303,7 @@ async fn daemon_start_twice_single_process() {
         }
         Ok(()) => {
             panic!(
-                "Second Daemon::run returned Ok(()) — it should have been rejected by \
+                "Second Daemon::run returned Ok(()), it should have been rejected by \
                  the exclusive lockfile. This means two daemon instances can run \
                  concurrently against the same graph.db (duplicate-spawn regression)."
             );

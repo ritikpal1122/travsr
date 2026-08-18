@@ -93,7 +93,7 @@ pub fn run(
         let check = travsr_store::SqliteStore::open(&db_path)?;
         if check.get_meta("last_commit")?.is_none() {
             println!(
-                "tip: run `git commit` to record a baseline — \
+                "tip: run `git commit` to record a baseline, \
                  `travsr status` will show freshness after your first commit"
             );
         }
@@ -110,7 +110,7 @@ pub fn run(
 fn hint_embed_missing() {
     if travsr_plugin_host::active_backend_id().is_none() {
         println!(
-            "tip: semantic search is not set up — run `travsr embed init` for natural-language queries"
+            "tip: semantic search is not set up. Run `travsr embed init` for natural-language queries"
         );
     }
 }
@@ -160,7 +160,7 @@ fn hint_lang_detect(repo_root: &std::path::Path) -> anyhow::Result<()> {
         // files, and the user should know which part is missing and why.
         println!(
             "note: {} found in this repo, but no semantic analyzer is published for \
-             this platform yet — structural indexing covers them, call/reference \
+             this platform yet, structural indexing covers them, call/reference \
              analysis does not.",
             unavailable
                 .iter()

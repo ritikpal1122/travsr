@@ -193,7 +193,7 @@ fn score_napi(src: &FfiMarker, dst_arity: Option<u8>) -> u8 {
     match (src.arity, dst_arity) {
         (Some(a), Some(b)) if a == b => 90,
         (None, _) | (_, None) => 50,
-        _ => 30, // arities known but mismatch — heuristic still emitted
+        _ => 30, // arities known but mismatch, heuristic still emitted
     }
 }
 

@@ -844,7 +844,7 @@ impl SqliteStore {
         (|| -> AnyResult<Self> {
             anyhow::ensure!(
                 path.exists(),
-                "no graph database at {} — run `travsr init`",
+                "no graph database at {}. Run `travsr init`",
                 path.display()
             );
             let conn = Connection::open_with_flags(
@@ -884,7 +884,7 @@ impl SqliteStore {
             let latest = sqlite_migration_runner().latest_version();
             anyhow::ensure!(
                 current == latest,
-                "schema v{current} ≠ expected v{latest} — pending migrations; reopen writable"
+                "schema v{current} ≠ expected v{latest}, pending migrations; reopen writable"
             );
             Ok(store)
         })()
@@ -1240,7 +1240,7 @@ impl SqliteStore {
     /// embed.db is picked up with a fresh connection.
     pub fn embed_data_version(&self) -> Result<Option<u64>, StoreError> {
         let Some(path) = self.embed_db_path.as_deref() else {
-            return Ok(None); // in-memory store — no embed sidecar
+            return Ok(None); // in-memory store, no embed sidecar
         };
         let mut slot = self.embed_meta_conn.borrow_mut();
         if !path.exists() {
@@ -2319,7 +2319,7 @@ impl SqliteStore {
                 tracing::error!(
                     ghost_count = ghosts.len(),
                     ceiling,
-                    "reconcile: circuit breaker tripped — deleting nothing"
+                    "reconcile: circuit breaker tripped, deleting nothing"
                 );
                 report.aborted = true;
                 report.abort_reason = Some(reason);
@@ -2333,7 +2333,7 @@ impl SqliteStore {
                     if policy.toctou_recheck && repo_root.join(ghost_path).exists() {
                         tracing::debug!(
                             path = %ghost_path,
-                            "reconcile: TOCTOU — file reappeared, skipping"
+                            "reconcile: TOCTOU, file reappeared, skipping"
                         );
                         continue;
                     }
@@ -4896,7 +4896,7 @@ impl SqliteStore {
                 .collect::<Result<_, _>>()
                 .context("collecting FTS backfill rows")?;
             collected
-        }; // stmt dropped here — conn is free for the write transaction
+        }; // stmt dropped here, conn is free for the write transaction
 
         // Index in one transaction to minimise WAL pressure.
         let tx = self
@@ -8469,7 +8469,7 @@ mod tests {
         );
         assert!(
             legs.word.is_empty(),
-            "word leg must not match — \"wal\" is not a word segment of either node"
+            "word leg must not match, \"wal\" is not a word segment of either node"
         );
     }
 
@@ -9012,7 +9012,7 @@ mod tests {
         assert_eq!(
             paths,
             vec!["src/my_file.rs"],
-            "underscore must be literal — decoy myXfile.rs must not match: {paths:?}"
+            "underscore must be literal, decoy myXfile.rs must not match: {paths:?}"
         );
     }
 

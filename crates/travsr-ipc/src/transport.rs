@@ -255,7 +255,7 @@ fn read_line_before<S: Read>(stream: &mut S, deadline: Duration) -> anyhow::Resu
     let mut chunk = [0u8; READ_CHUNK_BYTES];
     loop {
         match stream.read(&mut chunk) {
-            Ok(0) => break, // peer closed — caller reports the empty response
+            Ok(0) => break, // peer closed, caller reports the empty response
             Ok(n) => {
                 if let Some(nl) = chunk[..n].iter().position(|&b| b == b'\n') {
                     out.extend_from_slice(&chunk[..nl]);

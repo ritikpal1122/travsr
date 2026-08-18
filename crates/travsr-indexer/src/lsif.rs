@@ -78,7 +78,7 @@ fn parse_graph(dump: &str, corpus: &str) -> anyhow::Result<LsifGraph> {
         }
         let obj: serde_json::Value = match serde_json::from_str(line) {
             Ok(v) => v,
-            Err(_) => continue, // non-JSON line — skip
+            Err(_) => continue, // non-JSON line, skip
         };
 
         let id = match obj["id"].as_u64() {

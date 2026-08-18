@@ -138,7 +138,7 @@ impl MigrationRunner {
         let v = migration.version();
         assert!(
             !self.migrations.iter().any(|m| m.version() == v),
-            "duplicate migration version {v} registered — each version must be unique"
+            "duplicate migration version {v} registered, each version must be unique"
         );
         self.migrations.push(Box::new(migration));
     }
@@ -336,7 +336,7 @@ mod tests {
         runner.run(&mut store).unwrap();
         let ddl_count_after_first = store.ddl_log.len();
 
-        runner.run(&mut store).unwrap(); // second call — must be a no-op
+        runner.run(&mut store).unwrap(); // second call, must be a no-op
         assert_eq!(
             store.ddl_log.len(),
             ddl_count_after_first,

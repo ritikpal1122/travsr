@@ -140,7 +140,7 @@ pub fn spawn(
                         PendingKind::Upsert => WatchEvent::Upsert(path),
                     };
                     if tx_flush.blocking_send(ev).is_err() {
-                        return; // channel closed — daemon shutting down
+                        return; // channel closed, daemon shutting down
                     }
                 }
             }
@@ -268,7 +268,7 @@ pub fn spawn(
                                             tracing::warn!(
                                                 dropped = dropped_total,
                                                 cap = MAX_PENDING,
-                                                "watcher debounce table full — new paths \
+                                                "watcher debounce table full, new paths \
                                                  dropped (run `travsr init` to reconcile)"
                                             );
                                         }
